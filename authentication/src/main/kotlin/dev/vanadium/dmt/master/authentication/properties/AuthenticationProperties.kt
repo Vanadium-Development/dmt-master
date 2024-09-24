@@ -11,4 +11,7 @@ class AuthenticationProperties {
     lateinit var accessTokenExpiration: Duration
 
     lateinit var refreshTokenExpiration: Duration
+
+    var jwtIssuer: String = "dmt.vanadium.dev"
+    var jwtAudiencePrefix: String = "dmt.vanadium.dev/"
 }

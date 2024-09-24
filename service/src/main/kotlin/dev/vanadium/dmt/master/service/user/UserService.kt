@@ -5,6 +5,8 @@ import dev.vanadium.dmt.master.persistence.UserRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.util.UUID
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 class UserService {
@@ -17,7 +19,7 @@ class UserService {
     fun bootstrapUser(externalId: String): User {
 
         val user = userRepository.findByExternalId(externalId) ?: run {
-            val newUser = User(externalId)
+            val newUser = userRepository.save(User(externalId))
 
             logger.info("Created new user $newUser")
 
@@ -27,6 +29,10 @@ class UserService {
         logger.info("Successful bootstrapping of user $user")
 
         return user
+    }
+
+    fun getById(userId: UUID): User? {
+        return userRepository.findById(userId).getOrNull()
     }
 
 }

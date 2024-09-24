@@ -22,6 +22,8 @@ subprojects {
     dependencies {
         implementation("org.springframework.boot:spring-boot-starter")
         implementation(kotlin("stdlib"))
+
+        implementation("com.auth0:java-jwt:4.4.0")
     }
 
     dependencyManagement {

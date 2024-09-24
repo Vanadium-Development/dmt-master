@@ -1,5 +1,6 @@
 package dev.vanadium.dmt.master.authentication.service
 
+import dev.vanadium.dmt.master.authentication.dto.LoginTokenDto
 import dev.vanadium.dmt.master.service.user.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -11,10 +12,16 @@ class AuthService {
     @Autowired
     private lateinit var userService: UserService
 
-    fun login(externalId: String): String {
+    @Autowired
+    private lateinit var tokenService: TokenService
+
+    fun login(externalId: String): LoginTokenDto {
 
         val user = userService.bootstrapUser(externalId)
 
-        return ""
+        val accessToken = tokenService.createAccessToken(user.id)
+        val refreshToken = tokenService.createRefreshToken(accessToken.first, user.id)
+
+        return LoginTokenDto(accessToken.second, refreshToken)
     }
 }

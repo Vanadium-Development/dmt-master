@@ -20,10 +20,13 @@
             <column name="refresh_token_id" type="uuid" defaultValueComputed="gen_random_uuid()">
                 <constraints primaryKey="true"/>
             </column>
+            <column name="access_token_id" type="uuid">
+                <constraints nullable="false" unique="true"/>
+            </column>
             <column name="token" type="text">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="user" type="uuid">
+            <column name="user_id" type="uuid">
                 <constraints nullable="false" referencedTableName="user" referencedColumnNames="user_id" foreignKeyName="fk_refresh_token_user"/>
             </column>
             <column name="expires_at" type="timestamptz">
