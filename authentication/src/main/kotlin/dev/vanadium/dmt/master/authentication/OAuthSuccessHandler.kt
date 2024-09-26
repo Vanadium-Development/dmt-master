@@ -26,6 +26,7 @@ class OAuthSuccessHandler : AuthenticationSuccessHandler {
 
         val principal = authentication.principal as OAuth2User
 
+
         response.writer.write(objectMapper.writeValueAsString(authService.login(principal.name)))
     }
 }

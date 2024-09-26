@@ -9,8 +9,10 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/api" />
             <option value="$PROJECT_DIR$/application" />
             <option value="$PROJECT_DIR$/authentication" />
+            <option value="$PROJECT_DIR$/commons" />
             <option value="$PROJECT_DIR$/domainmodel" />
             <option value="$PROJECT_DIR$/persistence" />
             <option value="$PROJECT_DIR$/service" />

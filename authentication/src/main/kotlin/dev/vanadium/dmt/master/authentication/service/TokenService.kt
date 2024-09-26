@@ -1,6 +1,7 @@
 package dev.vanadium.dmt.master.authentication.service
 
 import com.auth0.jwt.JWT
+import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import dev.vanadium.dmt.master.authentication.dto.TokenHolder
 import dev.vanadium.dmt.master.authentication.properties.AuthenticationProperties
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.Instant
 import java.util.*
-import kotlin.math.exp
 import kotlin.random.Random
 
 @Service
@@ -48,6 +48,15 @@ class TokenService {
                 .withExpiresAt(expiresAt)
                 .sign(algorithm), expiresAt
         )
+    }
+
+    fun tokenVerification(): JWTVerifier {
+        return JWT.require(algorithm)
+            .withAudience(authenticationProperties.jwtAudiencePrefix + "access-token")
+            .withIssuer(authenticationProperties.jwtIssuer)
+            .withClaimPresence("jti")
+            .withClaimPresence("subject")
+            .build()
     }
 
     fun createRefreshToken(accessTokenId: UUID, userId: UUID): TokenHolder {

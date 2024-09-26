@@ -30,5 +30,5 @@ vanadium:
   dmt:
     authentication:
       jwt-secret: secret
-      access-token-expiration: 5m
+      access-token-expiration: 10d
       refresh-token-expiration: 30d
