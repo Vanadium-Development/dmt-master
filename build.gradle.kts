@@ -22,6 +22,10 @@ subprojects {
     dependencies {
         implementation("org.springframework.boot:spring-boot-starter")
         implementation(kotlin("stdlib"))
+        implementation("org.apache.commons:commons-lang3:3.17.0")
+        implementation("org.keycloak:keycloak-admin-client:25.0.6")
+        implementation("io.minio:minio:8.5.12")
+
 
         implementation("com.auth0:java-jwt:4.4.0")
     }

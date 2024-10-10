@@ -1,7 +1,9 @@
 package dev.vanadium.dmt.master.service.user
 
-import dev.vanadium.dmt.master.domainmodel.User
+import dev.vanadium.dmt.master.commons.authentication.UserContext
+import dev.vanadium.dmt.master.domainmodel.user.User
 import dev.vanadium.dmt.master.persistence.UserRepository
+import dev.vanadium.dmt.master.service.user.external.KeycloakUserService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -15,6 +17,9 @@ class UserService {
 
     @Autowired
     private lateinit var userRepository: UserRepository
+
+    @Autowired
+    private lateinit var keycloakUserService: KeycloakUserService
 
     fun bootstrapUser(externalId: String): User {
 
@@ -31,8 +36,13 @@ class UserService {
         return user
     }
 
+    fun getUserInfo(externalId: String): UserContext.UserInfo {
+        val fetchedUser = keycloakUserService.fetchUserInfo(externalId)
+
+        return UserContext.UserInfo(fetchedUser.firstName, fetchedUser.lastName, fetchedUser.username, fetchedUser.email)
+    }
+
     fun getById(userId: UUID): User? {
         return userRepository.findById(userId).getOrNull()
     }
-
 }

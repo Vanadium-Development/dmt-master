@@ -7,14 +7,13 @@ spring:
   liquibase:
     default-schema: public
 
-
   security:
     oauth2:
       client:
         registration:
           identity:
             client-id: dmt-identity
-            client-secret: 0gknA0RR7FLHakMB2vZ8DVqcnSaw5iIo
+            client-secret: XDeDCeIvs7lrLigKDtgFwQ7spSeoDdZn
             scope:
               - openid
             authorization-grant-type: authorization_code
@@ -32,3 +31,22 @@ vanadium:
       jwt-secret: secret
       access-token-expiration: 10d
       refresh-token-expiration: 30d
+    integration:
+      keycloak:
+        username: dmt-master-svc
+        password: password
+        server-url: http://localhost:18080
+        dmt-identity-client-id: f3b4837b-58c5-42ed-92c7-297c6fbf8c13
+      storage:
+        s3:
+          access-key: C6hOsOAs05Hq2Seys9Zy
+          secret-key: XySGx0WWupuhV9dD3ZUJpgZSwvpSWfy3f4xRz3V9
+          host: http://localhost:9000
+          bucket: dmt
+    file:
+      upload:
+        preflight-jwt-secret: secret
+        preflight-file-retention: 15m
+logging:
+  level:
+    dev.vanadium.dmt: debug

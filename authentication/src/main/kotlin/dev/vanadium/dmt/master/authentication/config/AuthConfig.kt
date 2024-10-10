@@ -29,6 +29,12 @@ class AuthConfig {
     fun tokenConfig(http: HttpSecurity): SecurityFilterChain {
 
         http {
+
+
+            csrf { disable() }
+            cors { disable() }
+
+
             sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
 
             securityMatcher("/**")
@@ -49,9 +55,13 @@ class AuthConfig {
     @Order(1)
     fun publicConfig(http: HttpSecurity): SecurityFilterChain {
         http {
+
+            csrf { disable() }
+            cors { disable() }
+
             sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
 
-            securityMatcher("/")
+            securityMatcher("/", "/swagger-ui/**", "/v3/**")
 
             authorizeRequests {
                 authorize(anyRequest, permitAll)
@@ -66,6 +76,12 @@ class AuthConfig {
     fun oauth2Config(http: HttpSecurity): SecurityFilterChain {
 
         http {
+
+
+            csrf { disable() }
+            cors { disable() }
+
+
             sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
 
 

@@ -9,6 +9,7 @@ dependencies {
     implementation(project(":domainmodel"))
     implementation(project(":persistence"))
     implementation(project(":commons"))
+    implementation(project(":integration"))
 
 
     api("org.springframework.boot:spring-boot-starter-web")

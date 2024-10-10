@@ -4,6 +4,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException
 import dev.vanadium.dmt.master.authentication.dto.LoginTokenDto
 import dev.vanadium.dmt.master.commons.authentication.UserContext
 import dev.vanadium.dmt.master.service.user.UserService
+import dev.vanadium.dmt.master.service.user.external.ExternalUserService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -20,6 +21,10 @@ class AuthService {
 
     @Autowired
     private lateinit var tokenService: TokenService
+
+    @Autowired
+    private lateinit var externalUserService: ExternalUserService
+
 
     fun login(externalId: String): LoginTokenDto {
 
@@ -40,14 +45,16 @@ class AuthService {
 
             val user = userService.getById(userId) ?: return null
 
-            return UserContext(user, findRoles())
+            val userInfo = externalUserService.fetchUserInfo(user.externalId)
+            return UserContext(
+                user,
+                UserContext.UserInfo(userInfo.firstName, userInfo.lastName, userInfo.username, userInfo.email),
+                externalUserService.fetchRoles(user.externalId)
+            )
         } catch (e: JWTVerificationException) {
             logger.error("Token verification failed with following error:", e)
             return null
         }
     }
 
-    private fun findRoles(): List<String> {
-        return listOf("Test", "roles")
-    }
 }

@@ -1,0 +1,8 @@
+ ____  __  __ _____
+|  _ \|  \/  |_   _|
+| | | | |\/| | | |
+| |_| | |  | | | |
+|____/|_|  |_| |_|
+
+Service: Master
+Spring-Boot: ${spring-boot.formatted-version}

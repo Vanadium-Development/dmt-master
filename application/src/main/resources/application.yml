@@ -1,3 +1,6 @@
 spring:
   application:
     name: DMT Master
+  data:
+    jdbc:
+      dialect: postgresql

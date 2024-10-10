@@ -1,4 +1,4 @@
-package dev.vanadium.dmt.master.domainmodel
+package dev.vanadium.dmt.master.domainmodel.user
 
 import jakarta.persistence.*
 import java.util.UUID

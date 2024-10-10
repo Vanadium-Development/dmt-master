@@ -3,9 +3,11 @@ dependencies {
 
     implementation(project(":domainmodel"))
     implementation(project(":persistence"))
+    implementation(project(":integration"))
+    implementation(project(":commons"))
 
 
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    api("org.springframework.boot:spring-boot-starter-data-jpa")
 
 
     testImplementation(kotlin("test"))

@@ -34,4 +34,36 @@
             </column>
         </createTable>
     </changeSet>
+
+    <changeSet id="create distributed_file table" author="michael steinmötzger">
+        <createTable tableName="distributed_file">
+            <column name="dfid" type="uuid" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="object_id" type="text">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created_at" type="timestamptz">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="uuid">
+                <constraints nullable="false" referencedTableName="user" referencedColumnNames="user_id" foreignKeyName="fk_distributed_file_created_by"/>
+            </column>
+
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add status column to distributed_file table" author="michael steinmötzger">
+        <addColumn tableName="distributed_file">
+            <column name="status" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <createIndex tableName="distributed_file" indexName="idx_distributed_file_status">
+            <column name="status"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>

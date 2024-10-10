@@ -2,6 +2,8 @@ plugins {
 	id("org.springframework.boot")
 }
 
+version = parent!!.version
+
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
@@ -18,13 +20,20 @@ repositories {
 	mavenCentral()
 }
 
+springBoot {
+	buildInfo()
+}
+
 dependencies {
 
 	implementation(project(":domainmodel"))
 	implementation(project(":persistence"))
 	implementation(project(":service"))
 	implementation(project(":authentication"))
+	implementation(project(":api"))
+	implementation(project(":integration"))
 
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
