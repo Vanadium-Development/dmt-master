@@ -8,6 +8,7 @@ import jakarta.annotation.PostConstruct
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 import java.io.ByteArrayInputStream
 
 @Service
@@ -36,6 +37,7 @@ class MinioStorageService : S3StorageService {
     }
 
 
+    // do not use because in production (look at KDocs from the interface)
     override fun createFile(data: ByteArray): String {
 
 
@@ -43,7 +45,6 @@ class MinioStorageService : S3StorageService {
 
         logger.info("Start uploading file '$name' to S3...")
 
-        // TODO: Maybe we should check whether this file already exist?
         minioClient.putObject(
             PutObjectArgs.builder()
                 .bucket(s3StorageIntegrationProperties.bucket)
@@ -56,6 +57,31 @@ class MinioStorageService : S3StorageService {
 
         return name
     }
+
+    override fun createFile(multipartFile: MultipartFile, fileSize: Long): String {
+
+        /**
+         * Here we have to use the multipartFile.resource InputStream because the .sha256() method is used as a sink
+         * and thus consumes our bytes. This is not desirable because we need the data after that to upload the file
+         * to S3. Basically we're abusing the fact that MultipartFile is offering us two InputStreams for some reason
+         */
+        val name = multipartFile.resource.inputStream.sha256()
+
+        logger.info("Start uploading file '$name' to S3...")
+
+        minioClient.putObject(
+            PutObjectArgs.builder()
+                .bucket(s3StorageIntegrationProperties.bucket)
+                .stream(multipartFile.inputStream, fileSize, -1)
+                .`object`(name)
+                .build()
+        )
+
+
+
+        return name
+    }
+
 
     override fun deleteFile(name: String) {
         minioClient.removeObject(RemoveObjectArgs.builder().bucket(s3StorageIntegrationProperties.bucket).`object`(name).build())

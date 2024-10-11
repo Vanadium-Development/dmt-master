@@ -13,4 +13,9 @@ open class UserContext(
         open val username: String,
         open val email: String
     )
+
+
+    override fun toString(): String {
+        return "${userInfo.firstName} ${userInfo.lastName} ($tenant)"
+    }
 }

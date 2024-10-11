@@ -15,6 +15,6 @@ data class ErrorResponse(
     data class Request(
         val timestamp: Instant,
         val path: String,
-        val correlationId: String,
+        val correlationId: String?,
     )
 }

@@ -1,9 +1,11 @@
 package dev.vanadium.dmt.master.commons.error
 
+import dev.vanadium.dmt.master.commons.authentication.UserContext
 import dev.vanadium.dmt.master.commons.correlation.MDCUtils
 import jakarta.annotation.PostConstruct
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
@@ -16,6 +18,12 @@ import java.time.Instant
 class ErrorHandler {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
+
+    @Autowired
+    private lateinit var incidentService: IncidentService
+
+    @Autowired
+    private lateinit var userContext: UserContext
 
     @PostConstruct
     fun errorSanityCheck() {
@@ -35,10 +43,11 @@ class ErrorHandler {
 
     private fun createErrorResponse(exception: Exception, request: HttpServletRequest, code: Int, status: HttpStatus, shouldLog: Boolean): ResponseEntity<ErrorResponse> {
         if(shouldLog) {
-            logger.error("An unexpected error occurred ", exception)
+            logger.error("An unexpected error occurred (current user context=$userContext) ", exception)
+            incidentService.storeIncident(exception)
         }
 
-        logger.debug("Error handler caught following exception (shouldLog=$shouldLog): ", exception)
+        logger.debug("Error handler caught following exception (shouldLog=$shouldLog, current user context=$userContext): ", exception)
 
         return ResponseEntity.status(status).body(
             ErrorResponse(

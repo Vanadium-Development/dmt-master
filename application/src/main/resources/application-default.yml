@@ -25,6 +25,10 @@ spring:
             user-info-uri: "http://localhost:18080/realms/dmt/protocol/openid-connect/userinfo"
             jwk-set-uri: "http://localhost:18080/realms/dmt/protocol/openid-connect/certs"
             user-name-attribute: sub
+  servlet:
+    multipart:
+      max-file-size: 15GB
+      max-request-size: 15GB
 vanadium:
   dmt:
     authentication:

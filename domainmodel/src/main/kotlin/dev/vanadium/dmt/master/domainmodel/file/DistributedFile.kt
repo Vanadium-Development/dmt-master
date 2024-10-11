@@ -29,6 +29,9 @@ class DistributedFile(
     @Enumerated(EnumType.STRING)
     var status = DistributedFileStatus.PREFLIGHT
 
+    @Column(name = "file_size")
+    var fileSize: Long = -1
+
     override fun toString(): String {
         return "$name (dfid=$dfid; objectId=$objectId; status=$status)"
     }

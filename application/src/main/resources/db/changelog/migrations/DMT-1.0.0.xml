@@ -66,4 +66,42 @@
             <column name="status"/>
         </createIndex>
     </changeSet>
+    
+    <changeSet id="add incident table" author="michael steinmötzger">
+        <createTable tableName="incident">
+            <column name="incident_id" type="uuid" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="correlation_id" type="text">
+                <constraints nullable="true"/>
+            </column>
+            <column name="stack_trace" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamptz">
+                <constraints nullable="false"/>
+            </column>
+            <column name="resolved_at" type="timestamptz">
+                <constraints nullable="true"/>
+            </column>
+            <column name="resolved_by" type="uuid">
+                <constraints nullable="true" referencedTableName="user" referencedColumnNames="user_id" foreignKeyName="fk_incident_user"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="incident" indexName="idx_incident_correlation_id">
+            <column name="correlation_id"/>
+        </createIndex>
+        <createIndex tableName="incident" indexName="idx_incident_resolved_at">
+            <column name="resolved_at"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="add file_size column to distributed file" author="michael steinmötzger">
+        <addColumn tableName="distributed_file">
+            <column name="file_size" type="bigint" defaultValue="-1">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

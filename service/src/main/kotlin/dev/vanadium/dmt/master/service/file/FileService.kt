@@ -15,6 +15,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
+import java.io.FileInputStream
+import java.io.InputStream
 import java.time.Instant
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
@@ -66,7 +69,7 @@ class FileService {
         return preflightToken to expiresAt
     }
 
-    fun finalizeFileUpload(preflightToken: String, bytes: ByteArray): DistributedFile {
+    fun finalizeFileUpload(preflightToken: String, multipartFile: MultipartFile, fileSize: Long): DistributedFile {
 
         val decodedToken = try {
             JWT.require(preflightJwtAlgorithm)
@@ -93,11 +96,13 @@ class FileService {
             throw DmtError.FILE_UPLOAD_ERROR.toThrowableException(null, "An upload for the file '$dfid' is only allowed, when it's status = DistributedFileStatus.PREFLIGHT")
         }
 
-        val objectId = s3StorageService.createFile(bytes)
+        val objectId = s3StorageService.createFile(multipartFile, fileSize)
 
         try {
             file.objectId = objectId
             file.status = DistributedFileStatus.UPLOADED
+            file.fileSize = fileSize
+
 
             file = store(file)
 

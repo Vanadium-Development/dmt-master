@@ -32,11 +32,13 @@ class FileController {
     @PostMapping("/upload/{preflightToken}", consumes = [MediaType.MULTIPART_FORM_DATA])
     @Operation(summary = "Uploads a file")
     fun uploadFile(@RequestParam("file") file: MultipartFile, @PathVariable preflightToken: String): FileDto {
-        val uploadedFile = fileService.finalizeFileUpload(preflightToken, file.bytes)
+        file.inputStream.use {
+            val uploadedFile = fileService.finalizeFileUpload(preflightToken, file, file.size)
 
-        val enrichedUser = userDtoEnricher.enrich(uploadedFile.createdBy.toDto())
+            val enrichedUser = userDtoEnricher.enrich(uploadedFile.createdBy.toDto())
 
-        return uploadedFile.toDto(enrichedUser)
+            return uploadedFile.toDto(enrichedUser)
+        }
     }
 
     @PostMapping("/upload/preflight", consumes = [MediaType.APPLICATION_JSON])

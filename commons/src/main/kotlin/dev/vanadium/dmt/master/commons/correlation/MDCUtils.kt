@@ -15,7 +15,7 @@ object MDCUtils {
         logger.debug("Populated correlation id '$value'")
     }
 
-    fun getCorrelationId(): String {
+    fun getCorrelationId(): String? {
         return MDC.get("correlationId")
     }
 
