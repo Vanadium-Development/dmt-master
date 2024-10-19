@@ -16,10 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.io.FileInputStream
-import java.io.InputStream
+import java.time.Duration
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
 private const val PREFLIGHT_TOKEN_ISSUER = "dmt.vanadium.dev"
@@ -27,6 +26,7 @@ private const val PREFLIGHT_TOKEN_AUDIENCE = "dmt.vanadium.dev/file/preflight"
 
 @Service
 class FileService {
+
 
 
     @Autowired
@@ -106,12 +106,30 @@ class FileService {
 
             file = store(file)
 
-            logger.info("Distributed File $file was successfully created. (Preflight occurred at ${decodedToken.issuedAtAsInstant}")
+            logger.info("Distributed File $file was successfully created. (Preflight occurred at ${decodedToken.issuedAtAsInstant})")
 
             return file
         } catch (e: Exception) {
             handleFileUploadError(objectId, e)
         }
+    }
+
+    fun updateFile(dfid: UUID, fileName: String?) {
+        val file = getAuthorizedByDfid(dfid)
+
+        fileName?.let {
+            file.name = fileName.ifEmpty { file.name }
+        }
+
+        store(file)
+    }
+
+    fun deleteFile(dfid: UUID) {
+        val file = getAuthorizedByDfid(dfid)
+
+        distributedFileRepository.delete(file)
+
+        logger.info("User $userContext deleted file $file")
     }
 
     fun deleteAll(files: List<DistributedFile>) {
@@ -125,9 +143,15 @@ class FileService {
         return preflightFiles.filter { (it.createdAt + fileUploadProperties.preflightFileRetention) < Instant.now() }
     }
 
+    private fun hasAccessToFile(dfid: UUID): Boolean {
+        val file = getByDfid(dfid) ?: return false
+
+        return file.createdBy.id == userContext.tenant.id
+    }
 
     private fun handleFileUploadError(objectId: String, e: Exception): Nothing {
         logger.error("An exception occurred while processing a file upload. Reverting file upload...")
+
 
         if (!distributedFileRepository.existsByObjectId(objectId)) {
             s3StorageService.deleteFile(objectId)
@@ -135,8 +159,21 @@ class FileService {
         throw e
     }
 
-    fun getByDfid(dfid: UUID) = distributedFileRepository.findById(dfid).getOrNull()
-    fun getByUser(pageable: Pageable, user: UUID) = distributedFileRepository.findByUser(pageable, user)
+
+
+    fun getAuthorizedByDfid(dfid: UUID): DistributedFile {
+        if(!hasAccessToFile(dfid)) {
+            throw DmtError.INSUFFICIENT_PERMISSIONS.toThrowableException(null)
+        }
+        return getByDfid(dfid)!! //hasAccessToFile() already does null check on the file, which means that we are sure it exists here
+    }
+
+
+    fun getByUser(pageable: Pageable, user: UUID) = distributedFileRepository.findByUserUploaded(pageable, user)
+
+
+    private fun getByDfid(dfid: UUID) = distributedFileRepository.findById(dfid).getOrNull()
+
 
     fun store(distributedFile: DistributedFile): DistributedFile {
         if(distributedFile.objectId == null && distributedFile.status != DistributedFileStatus.PREFLIGHT) {

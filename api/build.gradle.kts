@@ -9,6 +9,8 @@ dependencies {
     api("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.25")
+
     testImplementation(kotlin("test"))
 }
 

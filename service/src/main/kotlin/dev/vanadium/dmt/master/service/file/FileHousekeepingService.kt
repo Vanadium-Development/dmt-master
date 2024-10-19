@@ -39,5 +39,6 @@ class FileHousekeepingService {
 
             logger.info("Cleanup complete!")
         }, fileUploadProperties.preflightFileRetention)
+
     }
 }

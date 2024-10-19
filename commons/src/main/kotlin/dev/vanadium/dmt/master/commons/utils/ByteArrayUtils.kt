@@ -8,4 +8,3 @@ fun ByteArray.sha256(): String {
     val bytes = md.digest(this)
     return bytes.toHexString()
 }
-

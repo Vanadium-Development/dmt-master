@@ -35,6 +35,7 @@ vanadium:
       jwt-secret: secret
       access-token-expiration: 10d
       refresh-token-expiration: 30d
+      post-authentication-redirect: http://localhost:4200/auth/oauth2/token/{token}
     integration:
       keycloak:
         username: dmt-master-svc

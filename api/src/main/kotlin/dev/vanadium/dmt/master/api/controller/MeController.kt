@@ -17,6 +17,7 @@ import jakarta.ws.rs.core.MediaType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -30,18 +31,20 @@ class MeController {
     @Autowired
     private lateinit var userContext: UserContext
 
+
     @Autowired
     private lateinit var meService: MeService
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON])
     @Operation(summary = "Returns information about currently logged-in user.")
     fun getMe(): UserContextDto {
+
         return userContext.toDto()
     }
 
     @GetMapping("/file", produces = [MediaType.APPLICATION_JSON])
     @Operation(summary = "Returns all files created and owned by the user")
     fun getFiles(@Min(0) @QueryParam("page") page: Int, @Min(0) @Max(100) @QueryParam("pageSize") pageSize: Int): Page<AnonymousFileDto> {
-        return meService.getOwnedFiles(PageRequest.of(page, pageSize)).map { it.toDto() }
+        return meService.getOwnedFiles(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"))).map { it.toDto() }
     }
 }
