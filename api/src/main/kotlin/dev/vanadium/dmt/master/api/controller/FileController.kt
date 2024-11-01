@@ -5,7 +5,6 @@ import dev.vanadium.dmt.master.api.config.DmtSpecificationTags
 import dev.vanadium.dmt.master.api.dto.FileDto
 import dev.vanadium.dmt.master.api.dto.PreflightFileDto
 import dev.vanadium.dmt.master.api.dto.UpdateFileDto
-import dev.vanadium.dmt.master.api.dto.enrichers.UserDtoEnricher
 import dev.vanadium.dmt.master.api.dto.toDto
 import dev.vanadium.dmt.master.service.file.FileService
 import io.swagger.v3.oas.annotations.Operation
@@ -13,8 +12,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.ws.rs.core.MediaType
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import java.util.UUID
 
 @RestController
@@ -26,14 +27,12 @@ class FileController {
     @Autowired
     private lateinit var fileService: FileService
 
-    @Autowired
-    private lateinit var userDtoEnricher: UserDtoEnricher
 
 
     @GetMapping("/{dfid}", produces = [MediaType.APPLICATION_JSON])
     @Operation(summary = "Returns information about a single file")
     fun getFile(@PathVariable dfid: UUID): FileDto {
-        return fileService.getAuthorizedByDfid(dfid).toDto(userDtoEnricher)
+        return fileService.getAuthorizedByDfid(dfid).toDto()
     }
 
     @PutMapping("/{dfid}", produces = [MediaType.APPLICATION_JSON])
@@ -48,13 +47,19 @@ class FileController {
         fileService.deleteFile(dfid)
     }
 
+    @GetMapping("/{dfid}/download", produces = [MediaType.APPLICATION_OCTET_STREAM])
+    @Operation(summary = "Servers the file as a download")
+    fun downloadFile(@PathVariable dfid: UUID): ResponseEntity<StreamingResponseBody> {
+        return fileService.downloadFile(dfid)
+    }
+
     @PostMapping("/upload/{preflightToken}", consumes = [MediaType.MULTIPART_FORM_DATA], produces = [MediaType.APPLICATION_JSON])
     @Operation(summary = "Uploads a file")
     fun uploadFile(@RequestParam("file") file: MultipartFile, @PathVariable preflightToken: String): FileDto {
         file.inputStream.use {
             val uploadedFile = fileService.finalizeFileUpload(preflightToken, file, file.size)
 
-            return uploadedFile.toDto(userDtoEnricher)
+            return uploadedFile.toDto()
         }
     }
 

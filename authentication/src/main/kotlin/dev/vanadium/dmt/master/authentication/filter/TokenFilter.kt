@@ -6,11 +6,16 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository
 import org.springframework.web.filter.OncePerRequestFilter
 
 class TokenFilter(
     private val authService: AuthService
 ) : OncePerRequestFilter() {
+
+
+    private val repository = RequestAttributeSecurityContextRepository()
+
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
@@ -32,7 +37,12 @@ class TokenFilter(
 
         val authentication = DMTAuthentication(userContext)
 
-        SecurityContextHolder.getContext().authentication = authentication
+        val ctx = SecurityContextHolder.createEmptyContext()
+        ctx.authentication = authentication
+
+        SecurityContextHolder.setContext(ctx)
+        repository.saveContext(ctx, request, response)
+
 
         filterChain.doFilter(request, response)
     }

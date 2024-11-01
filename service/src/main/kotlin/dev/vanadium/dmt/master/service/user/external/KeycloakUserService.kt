@@ -59,4 +59,5 @@ class KeycloakUserService : ExternalUserService {
 
         return response
     }
+
 }

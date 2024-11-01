@@ -15,6 +15,15 @@ class User(
     @GeneratedValue(strategy = GenerationType.UUID)
     lateinit var id: UUID
 
+    @Column(name = "username")
+    var username: String? = null
+
+    @Column(name = "first_name")
+    var firstName: String? = null
+
+    @Column(name = "last_name")
+    var lastName: String? = null
+
     override fun toString(): String {
         return "$id -> $externalId"
     }

@@ -47,7 +47,12 @@ class ErrorHandler {
             incidentService.storeIncident(exception)
         }
 
-        logger.debug("Error handler caught following exception (shouldLog=$shouldLog, current user context=$userContext): ", exception)
+        logger.debug(
+            "Error handler caught following exception (shouldLog={}, current user context={}): ",
+            shouldLog,
+            userContext,
+            exception
+        )
 
         return ResponseEntity.status(status).body(
             ErrorResponse(

@@ -16,6 +16,7 @@ import kotlin.jvm.optionals.getOrNull
 @Service
 class IncidentService {
 
+
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     @Autowired
@@ -38,6 +39,8 @@ class IncidentService {
     fun getIncidents(resolved: Boolean, pageable: Pageable): Page<Incident> {
         return incidentRepository.findByResolved(resolved, pageable)
     }
+
+
 
     fun resolveIncident(incidentId: UUID) {
         val incident = getById(incidentId) ?: throw DmtError.INCIDENT_NOT_FOUND.toThrowableException(null, incidentId)

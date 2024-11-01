@@ -11,12 +11,17 @@ import dev.vanadium.dmt.master.domainmodel.file.DistributedFileStatus
 import dev.vanadium.dmt.master.integration.storage.S3StorageService
 import dev.vanadium.dmt.master.persistence.DistributedFileRepository
 import jakarta.annotation.PostConstruct
+import org.apache.http.client.methods.HttpHead
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.time.Duration
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import java.time.Instant
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
@@ -52,6 +57,12 @@ class FileService {
     }
 
     fun preflightFile(name: String): Pair<String, Instant> {
+
+
+        if(name.isEmpty()) {
+            throw DmtError.FILE_PREFLIGHT_ERROR.toThrowableException(null, "File name cannot be empty")
+        }
+
         val file = store(DistributedFile(name, null, userContext.tenant))
 
         val expiresAt = Instant.now() + fileUploadProperties.preflightFileRetention
@@ -112,6 +123,29 @@ class FileService {
         } catch (e: Exception) {
             handleFileUploadError(objectId, e)
         }
+    }
+
+    fun downloadFile(dfid: UUID): ResponseEntity<StreamingResponseBody> {
+        val file = getAuthorizedByDfid(dfid)
+
+        if(file.status != DistributedFileStatus.UPLOADED) {
+            throw DmtError.FILE_SERVE_ERROR.toThrowableException(null, "Cannot serve file, when the file is not yet uploaded.")
+
+        }
+
+        val stream = s3StorageService.downloadFile(file.objectId!!)
+
+
+        val responseBody = StreamingResponseBody {
+            stream.writeTo(it)
+            it.flush()
+        }
+
+        val headers = HttpHeaders()
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=${file.name}")
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
+
+        return ResponseEntity(responseBody, headers, HttpStatus.OK)
     }
 
     fun updateFile(dfid: UUID, fileName: String?) {
@@ -179,6 +213,7 @@ class FileService {
         if(distributedFile.objectId == null && distributedFile.status != DistributedFileStatus.PREFLIGHT) {
             throw DmtError.INTERNAL_VALIDATION_ERROR.toThrowableException(null, "A DistributedFile can only be stored with a null-valued objectId when status = DistributedFileStatus.PREFLIGHT")
         }
+
 
         if(distributedFile.status == DistributedFileStatus.PREFLIGHT && distributedFile.objectId != null) {
             throw DmtError.INTERNAL_VALIDATION_ERROR.toThrowableException(null, "A DistributedFile can only be stored with status DistributedFileStatus.PREFLIGHT when objectId is null")

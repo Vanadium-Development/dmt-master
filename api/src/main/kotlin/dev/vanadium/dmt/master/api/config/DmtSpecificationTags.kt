@@ -5,4 +5,5 @@ object DmtSpecificationTags {
     const val META = "Meta"
     const val FILE = "File"
     const val INCIDENT = "Incident"
+    const val NAMESPACE = "Namespace"
 }

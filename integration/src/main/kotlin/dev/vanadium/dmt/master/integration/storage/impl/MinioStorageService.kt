@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.FileOutputStream
+import java.io.OutputStream
 
 @Service
 class MinioStorageService : S3StorageService {
@@ -27,7 +30,7 @@ class MinioStorageService : S3StorageService {
         val bucket = s3StorageIntegrationProperties.bucket
         val bucketExists = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build())
 
-        if(!bucketExists) {
+        if (!bucketExists) {
             logger.info("S3 Bucket '$bucket' does not exist... creating...")
             minioClient.makeBucket(MakeBucketArgs.builder().bucket(s3StorageIntegrationProperties.bucket).build())
             logger.info("S3 Bucket successfully created.")
@@ -83,9 +86,25 @@ class MinioStorageService : S3StorageService {
     }
 
 
-    override fun deleteFile(name: String) {
-        minioClient.removeObject(RemoveObjectArgs.builder().bucket(s3StorageIntegrationProperties.bucket).`object`(name).build())
-        logger.info("Deleted S3 file '$name'")
+    override fun deleteFile(objectId: String) {
+        minioClient.removeObject(
+            RemoveObjectArgs.builder().bucket(s3StorageIntegrationProperties.bucket).`object`(objectId).build()
+        )
+        logger.info("Deleted S3 file '$objectId'")
     }
+
+    override fun downloadFile(objectId: String): ByteArrayOutputStream {
+        val stream = ByteArrayOutputStream()
+        minioClient.getObject(
+            GetObjectArgs(
+                DownloadObjectArgs.builder().`object`(objectId)
+                    .bucket(s3StorageIntegrationProperties.bucket)
+                    .build()
+            )
+        ).transferTo(stream)
+
+        return stream
+    }
+
 
 }

@@ -6,4 +6,5 @@ interface ExternalUserService {
 
     fun fetchRoles(externalUserId: String): List<String>
     fun fetchUserInfo(externalUserId: String): UserRepresentation
+
 }

@@ -104,4 +104,53 @@
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet id="create namespace table" author="michael steinmötzger">
+        <createTable tableName="namespace">
+            <column name="namespace_id" type="uuid" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="display_name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="url_slug" type="text">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="created_by" type="uuid">
+                <constraints nullable="false" referencedTableName="user" referencedColumnNames="user_id" foreignKeyName="fk_namespace_created_by"/>
+            </column>
+            <column name="created_at" type="timestamptz" defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="enabled" type="bool" defaultValue="true">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create namespace_user table" author="michael steinmötzger">
+        <createTable tableName="namespace_user">
+            <column name="user_id" type="uuid">
+                <constraints referencedTableName="user" referencedColumnNames="user_id" foreignKeyName="fk_namespace_user_user"/>
+            </column>
+            <column name="namespace_id" type="uuid">
+                <constraints referencedTableName="namespace" referencedColumnNames="namespace_id" foreignKeyName="fk_namespace_user_namespace"/>
+            </column>
+            <column name="created_by" type="uuid">
+                <constraints nullable="false" referencedTableName="user" referencedColumnNames="user_id" foreignKeyName="fk_namespace_user_created_by"/>
+            </column>
+            <column name="created_at" type="timestamptz" defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="namespace_user" columnNames="user_id,namespace_id"/>
+    </changeSet>
+
+    <changeSet id="add user information to user table" author="michael steinmötzger">
+        <addColumn tableName="user">
+            <column name="first_name" type="text"/>
+            <column name="last_name" type="text"/>
+            <column name="username" type="text"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

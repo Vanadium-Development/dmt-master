@@ -2,10 +2,9 @@ package dev.vanadium.dmt.master.api.controller
 
 import dev.vanadium.dmt.master.api.config.DmtSpecificationSecurityRequirements
 import dev.vanadium.dmt.master.api.config.DmtSpecificationTags
-import dev.vanadium.dmt.master.api.dto.AnonymousFileDto
-import dev.vanadium.dmt.master.api.dto.UserContextDto
-import dev.vanadium.dmt.master.api.dto.toDto
+import dev.vanadium.dmt.master.api.dto.*
 import dev.vanadium.dmt.master.commons.authentication.UserContext
+import dev.vanadium.dmt.master.service.namespace.NamespaceService
 import dev.vanadium.dmt.master.service.user.MeService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -35,6 +34,10 @@ class MeController {
     @Autowired
     private lateinit var meService: MeService
 
+    @Autowired
+    private lateinit var namespaceService: NamespaceService
+
+
     @GetMapping(produces = [MediaType.APPLICATION_JSON])
     @Operation(summary = "Returns information about currently logged-in user.")
     fun getMe(): UserContextDto {
@@ -44,7 +47,13 @@ class MeController {
 
     @GetMapping("/file", produces = [MediaType.APPLICATION_JSON])
     @Operation(summary = "Returns all files created and owned by the user")
-    fun getFiles(@Min(0) @QueryParam("page") page: Int, @Min(0) @Max(100) @QueryParam("pageSize") pageSize: Int): Page<AnonymousFileDto> {
+    fun getFiles(@Min(0) @QueryParam("page") page: Int, @Min(0) @Max(100) @QueryParam("pageSize") pageSize: Int): Page<FileDto> {
         return meService.getOwnedFiles(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"))).map { it.toDto() }
+    }
+
+    @GetMapping("/namespace", produces = [MediaType.APPLICATION_JSON])
+    @Operation(summary = "Returns a list of namespaces, the user has access to")
+    fun getNamespaces(@Min(0) @QueryParam("page") page: Int, @Min(0) @Max(100) @QueryParam("pageSize") pageSize: Int): Page<NamespaceDto> {
+        return namespaceService.getNamespacesByUser(userContext.tenant.id, PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "displayName"))).map { it.toDto() }
     }
 }
