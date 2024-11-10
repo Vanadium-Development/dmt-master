@@ -7,6 +7,7 @@ import dev.vanadium.dmt.master.service.user.external.KeycloakUserService
 import jakarta.ws.rs.NotFoundException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -49,6 +50,10 @@ class UserService {
         logger.info("Successful bootstrapping of user $user")
 
         return user
+    }
+
+    fun queryUsersForSuggestion(username: String): List<User> {
+        return userRepository.queryByUsername(username.lowercase(), PageRequest.of(0, 5)).content
     }
 
     fun getUserInfo(externalId: String): UserContext.UserInfo {

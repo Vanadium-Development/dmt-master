@@ -10,6 +10,8 @@ enum class DmtError(val code: Int, val template: String, val status: HttpStatus,
     INCIDENT_NOT_FOUND(1003, "Incident with id '%s' was not found.", HttpStatus.NOT_FOUND, false),
     FILE_PREFLIGHT_ERROR(1004, "Failed to preflight file: %s", HttpStatus.UNPROCESSABLE_ENTITY, false),
     FILE_SERVE_ERROR(1005, "Failed to serve file: %s", HttpStatus.UNPROCESSABLE_ENTITY, false),
+    NAMESPACE_NOT_FOUND(1006, "Namespace with id '%s' was not found.", HttpStatus.NOT_FOUND, false),
+    NAMESPACE_MEMBER_REMOVAL_NOT_POSSIBLE(1007, "Cannot remove member: %s", HttpStatus.FORBIDDEN, false),
 
     DTO_ENRICHMENT_ERROR(9001, "An error occurred while enriching DTO '%s' -> '%s': %s", HttpStatus.INTERNAL_SERVER_ERROR, true),
     INTERNAL_VALIDATION_ERROR(9002, "An internal validation error occurred: %s", HttpStatus.INTERNAL_SERVER_ERROR, true),

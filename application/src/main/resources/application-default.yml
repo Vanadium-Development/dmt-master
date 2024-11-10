@@ -29,6 +29,8 @@ spring:
     multipart:
       max-file-size: 15GB
       max-request-size: 15GB
+  jpa:
+    show-sql: true
 vanadium:
   dmt:
     authentication:

@@ -1,6 +1,7 @@
 package dev.vanadium.dmt.master.api.config
 
 object DmtSpecificationTags {
+    const val INDEX = "Index"
     const val ME = "Me"
     const val META = "Meta"
     const val FILE = "File"

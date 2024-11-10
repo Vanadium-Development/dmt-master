@@ -15,4 +15,7 @@ interface NamespaceRepository : JpaRepository<Namespace, UUID> {
 
     @Query("select n from Namespace n where n.createdBy.id = :user")
     fun findByCreatedBy(user: UUID, pageable: Pageable): Page<Namespace>
+
+    @Query("select nu.id.namespace from NamespaceUser nu where nu.id.user.id = :user")
+    fun findByMember(user: UUID, pageable: Pageable): Page<Namespace>
 }

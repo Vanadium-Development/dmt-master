@@ -54,6 +54,6 @@ class MeController {
     @GetMapping("/namespace", produces = [MediaType.APPLICATION_JSON])
     @Operation(summary = "Returns a list of namespaces, the user has access to")
     fun getNamespaces(@Min(0) @QueryParam("page") page: Int, @Min(0) @Max(100) @QueryParam("pageSize") pageSize: Int): Page<NamespaceDto> {
-        return namespaceService.getNamespacesByUser(userContext.tenant.id, PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "displayName"))).map { it.toDto() }
+        return namespaceService.getNamespacesByUser(userContext.tenant.id, PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, "id.namespace.displayName"))).map { it.toDto() }
     }
 }

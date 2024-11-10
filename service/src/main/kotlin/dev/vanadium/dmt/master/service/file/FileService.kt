@@ -11,7 +11,6 @@ import dev.vanadium.dmt.master.domainmodel.file.DistributedFileStatus
 import dev.vanadium.dmt.master.integration.storage.S3StorageService
 import dev.vanadium.dmt.master.persistence.DistributedFileRepository
 import jakarta.annotation.PostConstruct
-import org.apache.http.client.methods.HttpHead
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable

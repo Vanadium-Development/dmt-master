@@ -153,4 +153,8 @@
             <column name="username" type="text"/>
         </addColumn>
     </changeSet>
+    
+    <changeSet id="set created_by to nullable for system users in namwespace" author="michael steinmötzger">
+        <dropNotNullConstraint tableName="namespace_user" columnName="created_by"/>
+    </changeSet>
 </databaseChangeLog>
