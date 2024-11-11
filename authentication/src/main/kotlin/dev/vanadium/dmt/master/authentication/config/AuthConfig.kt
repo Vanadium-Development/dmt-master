@@ -1,6 +1,7 @@
 package dev.vanadium.dmt.master.authentication.config
 
 import dev.vanadium.dmt.master.authentication.OAuthSuccessHandler
+import dev.vanadium.dmt.master.authentication.TokenEntryPoint
 import dev.vanadium.dmt.master.authentication.filter.TokenFilter
 import dev.vanadium.dmt.master.authentication.service.AuthService
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,7 +27,7 @@ class AuthConfig {
 
     @Bean
     @Order(3)
-    fun tokenConfig(http: HttpSecurity): SecurityFilterChain {
+    fun tokenConfig(http: HttpSecurity, tokenEntryPoint: TokenEntryPoint): SecurityFilterChain {
 
         http {
 
@@ -38,6 +39,7 @@ class AuthConfig {
             sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
 
             securityMatcher("/**")
+            exceptionHandling { authenticationEntryPoint = tokenEntryPoint }
 
             authorizeRequests {
                 authorize(anyRequest, authenticated)

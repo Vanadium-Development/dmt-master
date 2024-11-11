@@ -25,13 +25,12 @@ class TokenFilter(
         val token = request.getHeader("Authorization")
             ?.split(" ")
             ?.getOrNull(1) ?: run {
-
-            sendUnauthorized(response)
+            filterChain.doFilter(request, response)
             return
         }
 
         val userContext = authService.resolveUserContext(token) ?: run {
-            sendUnauthorized(response)
+            filterChain.doFilter(request, response)
             return
         }
 
@@ -47,9 +46,4 @@ class TokenFilter(
         filterChain.doFilter(request, response)
     }
 
-    private fun sendUnauthorized(response: HttpServletResponse) {
-        response.writer.write("Unauthorized")
-        response.status = 401
-        response.contentType = "text/plain"
-    }
 }

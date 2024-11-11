@@ -27,7 +27,7 @@ class Namespace(
     var createdAt: Instant = Instant.now()
 
     @Column(name = "enabled")
-    var enabled = false
+    var enabled = true
 
 
     override fun toString(): String {

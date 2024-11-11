@@ -15,6 +15,8 @@ enum class DmtError(val code: Int, val template: String, val status: HttpStatus,
 
     DTO_ENRICHMENT_ERROR(9001, "An error occurred while enriching DTO '%s' -> '%s': %s", HttpStatus.INTERNAL_SERVER_ERROR, true),
     INTERNAL_VALIDATION_ERROR(9002, "An internal validation error occurred: %s", HttpStatus.INTERNAL_SERVER_ERROR, true),
+
+    UNAUTHORIZED(9998, "Unauthorized", HttpStatus.UNAUTHORIZED, false),
     UNKNOWN_ERROR(9999, "An unknown error occurred.", HttpStatus.INTERNAL_SERVER_ERROR, true);
 
 

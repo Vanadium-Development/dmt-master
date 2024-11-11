@@ -157,4 +157,35 @@
     <changeSet id="set created_by to nullable for system users in namwespace" author="michael steinmötzger">
         <dropNotNullConstraint tableName="namespace_user" columnName="created_by"/>
     </changeSet>
+
+    <changeSet id="create access_url table" author="michael steinmötzger">
+        <createTable tableName="access_url">
+            <column name="access_url_id" type="uuid" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="slug" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="namespace_id" type="uuid">
+                <constraints nullable="false" referencedTableName="namespace" referencedColumnNames="namespace_id" foreignKeyName="fk_access_url_namespace"/>
+            </column>
+            <column name="created_by" type="uuid">
+                <constraints nullable="false" referencedTableName="user" referencedColumnNames="user_id" foreignKeyName="fk_access_url_created_by"/>
+            </column>
+            <column name="created_at" type="timestamptz">
+                <constraints nullable="false"/>
+            </column>
+            <column name="settings" type="jsonb">
+                <constraints nullable="false"/>
+            </column>
+            <column name="enabled" type="bool" defaultValue="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="dfid" type="uuid">
+                <constraints nullable="false" referencedTableName="distributed_file" referencedColumnNames="dfid" foreignKeyName="fk_access_url_dfid"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint tableName="access_url" columnNames="slug,namespace_id"/>
+
+    </changeSet>
 </databaseChangeLog>
