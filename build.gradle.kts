@@ -1,3 +1,5 @@
+import java.io.ByteArrayOutputStream
+
 plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25" apply false
@@ -7,7 +9,19 @@ plugins {
 }
 
 group = "dev.vanadium.dmt.master"
-version = "1.0-SNAPSHOT"
+version = "1.0-SNAPSHOT-${getGitCommitHash()}"
+
+
+fun getGitCommitHash(): String {
+    val out = ByteArrayOutputStream()
+
+    exec {
+        commandLine("git", "rev-parse", "--short", "HEAD")
+        standardOutput = out
+    }
+
+    return out.toString("utf-8").trim()
+}
 
 subprojects {
     apply(plugin = "kotlin")
