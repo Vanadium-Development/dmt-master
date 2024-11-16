@@ -3,6 +3,7 @@ package dev.vanadium.dmt.master.api.controller
 import dev.vanadium.dmt.master.api.config.DmtSpecificationSecurityRequirements
 import dev.vanadium.dmt.master.api.config.DmtSpecificationTags
 import dev.vanadium.dmt.master.api.dto.*
+import dev.vanadium.dmt.master.commons.context.NamespaceContext
 import dev.vanadium.dmt.master.service.namespace.NamespaceService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -24,6 +25,9 @@ import java.util.UUID
 class NamespaceController {
 
     @Autowired
+    private lateinit var namespaceContext: NamespaceContext
+
+    @Autowired
     private lateinit var namespaceService: NamespaceService
 
 
@@ -36,34 +40,40 @@ class NamespaceController {
         return namespace.toDto()
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{namespaceId}")
     @Operation(summary = "Retrieve a namespace by id")
-    fun getNamespace(@PathVariable id: UUID): NamespaceDto {
-        return namespaceService.getAuthorizedNamespace(id).toDto()
+    fun getNamespace(@PathVariable namespaceId: UUID): NamespaceDto {
+        return namespaceService.getAuthorizedNamespace(namespaceId).toDto()
     }
 
-    @GetMapping("/{id}/member")
+    @GetMapping("/{namespaceId}/name")
+    @Operation(summary = "Returns the name of the namespace")
+    fun getNamespaceName(@PathVariable namespaceId: UUID): String {
+        return namespaceContext().createdBy.username ?: "ABCD"
+    }
+
+    @GetMapping("/{namespaceId}/member")
     @Operation(summary = "Returns all members of given namespace")
-    fun getMembers(@PathVariable id: UUID, @Min(0) @QueryParam("page") page: Int, @Min(0) @Max(100) @QueryParam("pageSize") pageSize: Int): Page<NamespaceUserDto> {
-        return namespaceService.getMembers(id, PageRequest.of(page, pageSize)).map { it.toDto() }
+    fun getMembers(@PathVariable namespaceId: UUID, @Min(0) @QueryParam("page") page: Int, @Min(0) @Max(100) @QueryParam("pageSize") pageSize: Int): Page<NamespaceUserDto> {
+        return namespaceService.getMembers(PageRequest.of(page, pageSize)).map { it.toDto() }
     }
 
-    @PostMapping("/{id}/member")
+    @PostMapping("/{namespaceId}/member")
     @Operation(summary = "Adds a member to a namespace")
-    fun addMember(@PathVariable id: UUID, @RequestBody body: NamespaceUserAddDto) {
-        namespaceService.addMember(id, body.user)
+    fun addMember(@PathVariable namespaceId: UUID, @RequestBody body: NamespaceUserAddDto) {
+        namespaceService.addMember(body.user)
     }
 
-    @DeleteMapping("/{id}/member/{member}")
+    @DeleteMapping("/{namespaceId}/member/{member}")
     @Operation(summary = "Removes a member from a namespace")
-    fun removeMember(@PathVariable id: UUID, @PathVariable member: UUID) {
-        namespaceService.removeMember(id, member)
+    fun removeMember(@PathVariable namespaceId: UUID, @PathVariable member: UUID) {
+        namespaceService.removeMember(member)
     }
 
-    @PostMapping("/{id}/member/suggestion")
+    @PostMapping("/{namespaceId}/member/suggestion")
     @Operation(summary = "Queries users, which can be added to the namespace")
-    fun queryMemberSuggestions(@PathVariable id: UUID, @QueryParam("q") query: String): List<UserDto> {
-        return namespaceService.queryMemberSuggestion(id, query).map { it.toDto() }
+    fun queryMemberSuggestions(@PathVariable namespaceId: UUID, @QueryParam("q") query: String): List<UserDto> {
+        return namespaceService.queryMemberSuggestion(query).map { it.toDto() }
     }
 
 }

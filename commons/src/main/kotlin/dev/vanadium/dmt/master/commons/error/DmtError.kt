@@ -12,9 +12,11 @@ enum class DmtError(val code: Int, val template: String, val status: HttpStatus,
     FILE_SERVE_ERROR(1005, "Failed to serve file: %s", HttpStatus.UNPROCESSABLE_ENTITY, false),
     NAMESPACE_NOT_FOUND(1006, "Namespace with id '%s' was not found.", HttpStatus.NOT_FOUND, false),
     NAMESPACE_MEMBER_REMOVAL_NOT_POSSIBLE(1007, "Cannot remove member: %s", HttpStatus.FORBIDDEN, false),
+    SLUG_NOT_AVAILABLE(1008, "Slug is not available: %s", HttpStatus.BAD_REQUEST, false),
 
     DTO_ENRICHMENT_ERROR(9001, "An error occurred while enriching DTO '%s' -> '%s': %s", HttpStatus.INTERNAL_SERVER_ERROR, true),
     INTERNAL_VALIDATION_ERROR(9002, "An internal validation error occurred: %s", HttpStatus.INTERNAL_SERVER_ERROR, true),
+    REQUEST_CONTEXT_HOLDER_INVALID_STATE(9003, "Tried to retrieve value from request context holder '%s' while value was not yet provided!", HttpStatus.INTERNAL_SERVER_ERROR, true),
 
     UNAUTHORIZED(9998, "Unauthorized", HttpStatus.UNAUTHORIZED, false),
     UNKNOWN_ERROR(9999, "An unknown error occurred.", HttpStatus.INTERNAL_SERVER_ERROR, true);

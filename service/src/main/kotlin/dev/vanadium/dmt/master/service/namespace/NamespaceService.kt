@@ -1,6 +1,7 @@
 package dev.vanadium.dmt.master.service.namespace
 
 import dev.vanadium.dmt.master.commons.authentication.UserContext
+import dev.vanadium.dmt.master.commons.context.NamespaceContext
 import dev.vanadium.dmt.master.commons.error.DmtError
 import dev.vanadium.dmt.master.commons.utils.sha256
 import dev.vanadium.dmt.master.domainmodel.namespace.Namespace
@@ -22,6 +23,9 @@ import kotlin.random.Random
 
 @Service
 class NamespaceService {
+
+    @Autowired
+    private lateinit var namespaceContext: NamespaceContext
 
     @Autowired
     private lateinit var userService: UserService
@@ -50,25 +54,25 @@ class NamespaceService {
     }
 
 
-    fun addMember(namespaceId: UUID, user: UUID): NamespaceUser {
-        val namespace = getAuthorizedNamespace(namespaceId)
+    fun addMember(user: UUID): NamespaceUser {
+        val namespace = namespaceContext()
 
         return addMemberInsecure(namespace.id, user, userContext.tenant.id)
     }
 
     @Transactional
-    fun removeMember(namespaceId: UUID, user: UUID) {
-        val namespace = getAuthorizedNamespace(namespaceId)
+    fun removeMember(user: UUID) {
+        val namespace = namespaceContext()
 
         if(namespace.createdBy.id == user) {
             throw DmtError.NAMESPACE_MEMBER_REMOVAL_NOT_POSSIBLE.toThrowableException(null, "Cannot remove creator of the namespace!")
         }
 
-        namespaceUserRepository.deleteByUserAndNamespace(user, namespaceId)
+        namespaceUserRepository.deleteByUserAndNamespace(user, namespace.id)
     }
 
-    fun queryMemberSuggestion(namespaceId: UUID, usernameQuery: String): List<User> {
-        val namespace = getAuthorizedNamespace(namespaceId)
+    fun queryMemberSuggestion(usernameQuery: String): List<User> {
+        val namespace = namespaceContext()
         return userService.queryUsersForSuggestion(usernameQuery).filterNot { namespace.isMember(it.id) }
     }
 
@@ -105,8 +109,8 @@ class NamespaceService {
         return namespaces
     }
 
-    fun getMembers(namespace: UUID, pageable: Pageable): Page<NamespaceUser> {
-        val ns = getAuthorizedNamespace(namespace)
+    fun getMembers(pageable: Pageable): Page<NamespaceUser> {
+        val ns = namespaceContext()
 
         return namespaceUserRepository.getMembers(ns.id, pageable)
     }

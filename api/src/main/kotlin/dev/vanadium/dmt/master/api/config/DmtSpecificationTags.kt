@@ -7,4 +7,5 @@ object DmtSpecificationTags {
     const val FILE = "File"
     const val INCIDENT = "Incident"
     const val NAMESPACE = "Namespace"
+    const val ACCESS_URL = "Access URL"
 }

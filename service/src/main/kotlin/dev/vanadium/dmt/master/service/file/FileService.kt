@@ -10,6 +10,7 @@ import dev.vanadium.dmt.master.domainmodel.file.DistributedFile
 import dev.vanadium.dmt.master.domainmodel.file.DistributedFileStatus
 import dev.vanadium.dmt.master.integration.storage.S3StorageService
 import dev.vanadium.dmt.master.persistence.DistributedFileRepository
+import dev.vanadium.dmt.master.service.namespace.NamespaceService
 import jakarta.annotation.PostConstruct
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,6 +33,8 @@ private const val PREFLIGHT_TOKEN_AUDIENCE = "dmt.vanadium.dev/file/preflight"
 class FileService {
 
 
+    @Autowired
+    private lateinit var namespaceService: NamespaceService
 
     @Autowired
     private lateinit var s3StorageService: S3StorageService
