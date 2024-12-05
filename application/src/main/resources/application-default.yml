@@ -13,7 +13,7 @@ spring:
         registration:
           identity:
             client-id: dmt-identity
-            client-secret: XDeDCeIvs7lrLigKDtgFwQ7spSeoDdZn
+            client-secret: LfuTNZvylIfB7vvEHdQLtLnhwPVCpIWt
             scope:
               - openid
             authorization-grant-type: authorization_code
@@ -37,17 +37,17 @@ vanadium:
       jwt-secret: secret
       access-token-expiration: 10d
       refresh-token-expiration: 30d
-      post-authentication-redirect: http://localhost:4200/auth/oauth2/token/{token}
+      post-authentication-redirect: http://localhost:3000/auth/oauth2/token/{token}
     integration:
       keycloak:
         username: dmt-master-svc
-        password: password
+        password: admin
         server-url: http://localhost:18080
         dmt-identity-client-id: f3b4837b-58c5-42ed-92c7-297c6fbf8c13
       storage:
         s3:
-          access-key: C6hOsOAs05Hq2Seys9Zy
-          secret-key: XySGx0WWupuhV9dD3ZUJpgZSwvpSWfy3f4xRz3V9
+          access-key: raE9ZH7SizjlDGiwUXMR
+          secret-key: tokTtEBj0kfBTGbJmnwL46yQboEJOIXFZxK8EQ2j
           host: http://localhost:9000
           bucket: dmt
     file:

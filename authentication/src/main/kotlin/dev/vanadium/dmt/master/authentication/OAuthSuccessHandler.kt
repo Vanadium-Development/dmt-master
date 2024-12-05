@@ -34,6 +34,6 @@ class OAuthSuccessHandler : AuthenticationSuccessHandler {
 
         val token = objectMapper.writeValueAsBytes(authService.login(principal.name))
 
-        response.sendRedirect(authenticationProperties.postAuthenticationRedirect.replace("{token}", Base64.getEncoder().encodeToString(token)))
+        response.sendRedirect(authenticationProperties.postAuthenticationRedirect.replace("{token}", Base64.getUrlEncoder().withoutPadding().encodeToString(token)))
     }
 }
