@@ -52,7 +52,7 @@ class AccessUrlService {
     }
 
 
-    private fun isSlugAvailable(namespace: UUID, slug: String): Pair<Boolean, String?> {
+    fun isSlugAvailable(namespace: UUID, slug: String): Pair<Boolean, String?> {
         val slugExists = accessUrlRepository.doesSlugExist(namespace, slug)
 
         return !slugExists to if(slugExists) "Slug $slug is already used in namespace!" else null

@@ -206,6 +206,7 @@ class FileService {
 
 
     fun getByUser(pageable: Pageable, user: UUID) = distributedFileRepository.findByUserUploaded(pageable, user)
+    fun getByUserFilterFilename(pageable: Pageable, user: UUID, query: String) = distributedFileRepository.findByUserUploadedFilterName(pageable, user, query)
 
 
     private fun getByDfid(dfid: UUID) = distributedFileRepository.findById(dfid).getOrNull()

@@ -39,8 +39,8 @@ class FileController {
     @Operation(summary = "Updates data of a file")
     fun updateFile(@PathVariable dfid: UUID, @RequestBody body: UpdateFileDto) {
         fileService.updateFile(dfid, body.fileName)
-    }
 
+    }
 
     @DeleteMapping("/{dfid}")
     @Operation(summary = "Deletes a file")
@@ -53,6 +53,7 @@ class FileController {
     fun downloadFile(@PathVariable dfid: UUID): ResponseEntity<StreamingResponseBody> {
         return fileService.downloadFile(dfid)
     }
+
 
     @PostMapping("/upload/{preflightToken}", consumes = [MediaType.MULTIPART_FORM_DATA], produces = [MediaType.APPLICATION_JSON])
     @Operation(summary = "Uploads a file")
@@ -72,4 +73,5 @@ class FileController {
 
         return PreflightFileDto.Response(token.first, token.second)
     }
+
 }

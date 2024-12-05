@@ -4,9 +4,8 @@ import dev.vanadium.dmt.master.api.config.DmtSpecificationSecurityRequirements
 import dev.vanadium.dmt.master.api.config.DmtSpecificationTags
 import dev.vanadium.dmt.master.api.dto.AccessUrlCreateDto
 import dev.vanadium.dmt.master.api.dto.AccessUrlDto
-import dev.vanadium.dmt.master.api.dto.NamespaceDto
+import dev.vanadium.dmt.master.api.dto.AccessUrlSlugAvailableDto
 import dev.vanadium.dmt.master.api.dto.toDto
-import dev.vanadium.dmt.master.commons.context.NamespaceContext
 import dev.vanadium.dmt.master.service.accessurl.AccessUrlService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -22,8 +21,7 @@ import java.util.*
 @RequestMapping("/namespace/{namespaceId}/access-url")
 @SecurityRequirement(name = DmtSpecificationSecurityRequirements.TOKEN)
 class AccessUrlController(
-    private val accessUrlService: AccessUrlService,
-    private val namespaceContext: NamespaceContext
+    private val accessUrlService: AccessUrlService
 ) {
 
     @PostMapping
@@ -38,8 +36,17 @@ class AccessUrlController(
         return accessUrlService.getAccessUrls(PageRequest.of(page, pageSize)).map { it.toDto() }
     }
 
-    @GetMapping("oOOOO")
-    fun getNamespace(@PathVariable namespaceId: UUID): NamespaceDto {
-        return namespaceContext().toDto()
+    @GetMapping("/slug/{slug}/available")
+    @Operation(summary = "Checks the availability of given slug in namespace")
+    fun isSlugAvailable(@PathVariable namespaceId: UUID, @PathVariable slug: String): AccessUrlSlugAvailableDto {
+
+        val (available, reason) = accessUrlService.isSlugAvailable(namespaceId, slug)
+
+        return AccessUrlSlugAvailableDto(
+            slug,
+            available,
+            reason
+        )
     }
+
 }

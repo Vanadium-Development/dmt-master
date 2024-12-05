@@ -18,4 +18,7 @@ interface DistributedFileRepository : JpaRepository<DistributedFile, UUID> {
 
     @Query("""select d from DistributedFile d where d.createdBy.id = :user and d.status = 'UPLOADED' """)
     fun findByUserUploaded(pageable: Pageable, user: UUID): Page<DistributedFile>
+
+    @Query("""select d from DistributedFile d where d.createdBy.id = :user and d.status = 'UPLOADED' and d.name like concat('%', :query, '%') """)
+    fun findByUserUploadedFilterName(pageable: Pageable, user: UUID, query: String): Page<DistributedFile>
 }

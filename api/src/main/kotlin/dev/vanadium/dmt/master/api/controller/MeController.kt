@@ -41,14 +41,13 @@ class MeController {
     @GetMapping(produces = [MediaType.APPLICATION_JSON])
     @Operation(summary = "Returns information about currently logged-in user.")
     fun getMe(): UserContextDto {
-
         return userContext.toDto()
     }
 
     @GetMapping("/file", produces = [MediaType.APPLICATION_JSON])
     @Operation(summary = "Returns all files created and owned by the user")
-    fun getFiles(@Min(0) @QueryParam("page") page: Int, @Min(0) @Max(100) @QueryParam("pageSize") pageSize: Int): Page<FileDto> {
-        return meService.getOwnedFiles(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"))).map { it.toDto() }
+    fun getFiles(@Min(0) @QueryParam("page") page: Int, @Min(0) @Max(100) @QueryParam("pageSize") pageSize: Int, @QueryParam("q") query: String?): Page<FileDto> {
+        return meService.getOwnedFiles(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "createdAt")), query).map { it.toDto() }
     }
 
     @GetMapping("/namespace", produces = [MediaType.APPLICATION_JSON])

@@ -34,3 +34,9 @@ data class AccessUrlCreateDto(
     val settings: AccessUrlSettings,
     val file: UUID
 )
+
+data class AccessUrlSlugAvailableDto(
+    val slug: String,
+    val available: Boolean,
+    val reason: String?
+)

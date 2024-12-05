@@ -19,5 +19,10 @@ class MeService {
     private lateinit var fileService: FileService
 
 
-    fun getOwnedFiles(pageable: Pageable): Page<DistributedFile> = fileService.getByUser(pageable, userContext.tenant.id)
+    fun getOwnedFiles(pageable: Pageable, query: String?): Page<DistributedFile> =
+        if (query.isNullOrEmpty()) fileService.getByUser(
+            pageable,
+            userContext.tenant.id
+        ) else fileService.getByUserFilterFilename(pageable, userContext.tenant.id, query)
+
 }
